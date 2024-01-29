@@ -12,8 +12,8 @@ const HTTPS_PORT = 443;
 
 // Configuración de opciones para el servidor HTTPS
 const httpsOptions = {
-  key: fs.readFileSync("/path/to/private-key.pem"),  // Ruta a tu archivo de clave privada
-  cert: fs.readFileSync("/path/to/certificate.pem"), // Ruta a tu archivo de certificado
+  key: fs.readFileSync("/etc/letsencrypt/live/mp3yt.tech/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/mp3yt.tech/fullchain.pem"),
 };
 
 // Usa el middleware cors
