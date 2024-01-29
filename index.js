@@ -1,11 +1,20 @@
 const express = require("express");
-const ytdl = require("ytdl-core");
+const https = require("https");
 const fs = require("fs");
+const ytdl = require("ytdl-core");
 const cors = require("cors");
 const compression = require("compression");
-const responseTime = require("response-time"); // Importa el middleware response-time
+const responseTime = require("response-time");
+
 const app = express();
 const PORT = 3000;
+const HTTPS_PORT = 443;
+
+// Configuración de opciones para el servidor HTTPS
+const httpsOptions = {
+  key: fs.readFileSync("/path/to/private-key.pem"),  // Ruta a tu archivo de clave privada
+  cert: fs.readFileSync("/path/to/certificate.pem"), // Ruta a tu archivo de certificado
+};
 
 // Usa el middleware cors
 app.use(cors());
@@ -95,6 +104,20 @@ app.get("/download-video/:videoId", async (req, res) => {
   }
 });
 
+// Crear el servidor HTTPS
+https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
+  console.log(`Servidor HTTPS escuchando en https://localhost:${HTTPS_PORT}`);
+});
+
+// Redirigir todas las solicitudes HTTP a HTTPS
+app.use((req, res, next) => {
+  if (!req.secure) {
+    return res.redirect(`https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
+
+// Redirigir todas las solicitudes HTTP a HTTPS (incluso para el puerto 80)
 app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor HTTP redirigiendo a HTTPS en http://localhost:${PORT}`);
 });
