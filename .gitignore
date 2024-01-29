@@ -1,0 +1,9 @@
+# Ignorar la carpeta node_modules
+node_modules/
+
+# Ignorar archivos generados durante el desarrollo
+*.log
+*.lock
+.DS_Store
+Thumbs.db
+
