@@ -8,7 +8,7 @@ const responseTime = require("response-time");
 
 const app = express();
 const PORT = 3000;
-const HTTPS_PORT = 8443;
+const HTTPS_PORT = 8443;  // Actualiza el puerto a tu puerto HTTPS
 
 // Configuración de opciones para el servidor HTTPS
 const httpsOptions = {
