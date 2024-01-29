@@ -10,7 +10,6 @@ const app = express();
 const PORT = 3000;
 const HTTPS_PORT = 8443;
 
-
 // Configuración de opciones para el servidor HTTPS
 const httpsOptions = {
   key: fs.readFileSync("/etc/letsencrypt/live/mp3yt.tech/privkey.pem"),
@@ -25,6 +24,14 @@ app.use(compression());
 
 // Usa el middleware response-time
 app.use(responseTime());
+
+// Redirigir todas las solicitudes HTTP a HTTPS
+app.use((req, res, next) => {
+  if (!req.secure) {
+    return res.redirect(`https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
 
 // Ruta para descargar archivos en formato .mp3
 app.get("/download/:videoId", async (req, res) => {
@@ -110,15 +117,7 @@ https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
   console.log(`Servidor HTTPS escuchando en https://localhost:${HTTPS_PORT}`);
 });
 
-// Redirigir todas las solicitudes HTTP a HTTPS
-app.use((req, res, next) => {
-  if (!req.secure) {
-    return res.redirect(`https://${req.headers.host}${req.url}`);
-  }
-  next();
-});
-
-// Redirigir todas las solicitudes HTTP a HTTPS (incluso para el puerto 80)
+// Servidor HTTP (solo redirigirá a HTTPS)
 app.listen(PORT, () => {
   console.log(`Servidor HTTP redirigiendo a HTTPS en http://localhost:${PORT}`);
 });
