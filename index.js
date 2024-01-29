@@ -116,8 +116,3 @@ app.get("/download-video/:videoId", async (req, res) => {
 https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
   console.log(`Servidor HTTPS escuchando en https://localhost:${HTTPS_PORT}`);
 });
-
-// Servidor HTTP (solo redirigirá a HTTPS)
-app.listen(PORT, () => {
-  console.log(`Servidor HTTP redirigiendo a HTTPS en http://localhost:${PORT}`);
-});
