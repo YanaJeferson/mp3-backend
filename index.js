@@ -6,7 +6,7 @@ const compression = require("compression");
 const responseTime = require("response-time");
 
 const app = express();
-const HTTP_PORT = 4173;  // Puerto HTTP para Node.js
+const HTTP_PORT = 3000;  // Puerto HTTP para Node.js
 
 // Usa el middleware cors
 app.use(cors());
