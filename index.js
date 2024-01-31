@@ -1,13 +1,13 @@
 const express = require("express");
-const http = require("http");  // Cambiado de 'https' a 'http'
+const https = require("https");
+const fs = require("fs");
 const ytdl = require("ytdl-core");
 const cors = require("cors");
 const compression = require("compression");
 const responseTime = require("response-time");
 
 const app = express();
-const HTTP_PORT = 3000;  // Puerto HTTP para Node.js
-
+const HTTPS_PORT = 443;  // Puerto para HTTPS
 // Usa el middleware cors
 app.use(cors());
 
@@ -96,7 +96,14 @@ app.get("/download/:videoId", async (req, res) => {
   }
 });
 
-// Crear el servidor HTTP
-http.createServer(app).listen(HTTP_PORT, () => {
-  console.log(`Servidor HTTP escuchando en http://localhost:${HTTP_PORT}`);
+const privateKey = fs.readFileSync("/etc/letsencrypt/live/mp3yt.tech/privkey.pem", "utf8");
+const certificate = fs.readFileSync("/etc/letsencrypt/live/mp3yt.tech/fullchain.pem", "utf8");
+const credentials = { key: privateKey, cert: certificate };
+
+// Crea el servidor HTTPS
+const httpsServer = https.createServer(credentials, app);
+
+// Escucha en el puerto HTTPS
+httpsServer.listen(HTTPS_PORT, () => {
+  console.log(`Servidor HTTPS escuchando en https://localhost:${HTTPS_PORT}`);
 });
