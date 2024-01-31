@@ -100,6 +100,7 @@ app.get("/download/:videoId", async (req, res) => {
 // server 
 
 const httpServer = http.createServer(app);
-httpServer.listen(HTTP_PORT, () => {
-  console.log(`Servidor HTTP escuchando en http://localhost:${HTTP_PORT}`);
+httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
+  console.log(`Servidor HTTP escuchando en http://0.0.0.0:${HTTP_PORT}`);
 });
+
