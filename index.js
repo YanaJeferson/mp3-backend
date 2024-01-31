@@ -1,20 +1,12 @@
 const express = require("express");
-const https = require("https");
-const fs = require("fs");
+const http = require("http");  // Cambiado de 'https' a 'http'
 const ytdl = require("ytdl-core");
 const cors = require("cors");
 const compression = require("compression");
 const responseTime = require("response-time");
 
 const app = express();
-const PORT = 3000;
-const HTTPS_PORT = 8443;  // Actualiza el puerto a tu puerto HTTPS
-
-// Configuración de opciones para el servidor HTTPS
-const httpsOptions = {
-  key: fs.readFileSync("/etc/letsencrypt/live/mp3yt.tech/privkey.pem"),
-  cert: fs.readFileSync("/etc/letsencrypt/live/mp3yt.tech/fullchain.pem"),
-};
+const HTTP_PORT = 4173;  // Puerto HTTP para Node.js
 
 // Usa el middleware cors
 app.use(cors());
@@ -24,54 +16,6 @@ app.use(compression());
 
 // Usa el middleware response-time
 app.use(responseTime());
-
-// Redirigir todas las solicitudes HTTP a HTTPS
-app.use((req, res, next) => {
-  if (!req.secure) {
-    return res.redirect(`https://${req.headers.host}${req.url}`);
-  }
-  next();
-});
-
-// Ruta para descargar archivos en formato .mp3
-app.get("/download/:videoId", async (req, res) => {
-    const videoId = req.params.videoId;
-  
-    try {
-      const info = await ytdl.getInfo(videoId);
-      
-      // Filtrar formatos para obtener solo formatos de audio
-      const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
-  
-      if (audioFormats.length === 0) {
-        throw new Error("No se encontraron formatos de audio.");
-      }
-  
-      // Seleccionar el primer formato de audio (puedes ajustar esto según tus necesidades)
-      const format = audioFormats[0];
-  
-      res.header(
-        "Content-Disposition",
-        `attachment; filename="${
-          info.videoDetails.title
-        }.mp3"; filename*=UTF-8''${encodeURIComponent(
-          info.videoDetails.title
-        )}.mp3`
-      );
-      res.header("Content-Type", "audio/mpeg");
-      res.setHeader(
-        "X-Thumbnail-Url",
-        info.videoDetails.thumbnail.thumbnails[0].url
-      );
-  
-      // Descargar el flujo de audio y enviar al cliente
-      ytdl(videoId, { format: format }).pipe(res);
-  
-    } catch (error) {
-      console.error("Error al obtener información del video:", error.message);
-      res.status(500).send("Error al obtener información del video");
-    }
-  });
 
 // Nueva ruta para descargar archivos en formato .mp4
 app.get("/download-video/:videoId", async (req, res) => {
@@ -112,7 +56,47 @@ app.get("/download-video/:videoId", async (req, res) => {
   }
 });
 
-// Crear el servidor HTTPS
-https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
-  console.log(`Servidor HTTPS escuchando en https://localhost:${HTTPS_PORT}`);
+// Nueva ruta para descargar archivos en formato .mp3
+app.get("/download/:videoId", async (req, res) => {
+  const videoId = req.params.videoId;
+
+  try {
+    const info = await ytdl.getInfo(videoId);
+
+    // Filtrar formatos para obtener solo formatos de audio
+    const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
+
+    if (audioFormats.length === 0) {
+      throw new Error("No se encontraron formatos de audio.");
+    }
+
+    // Seleccionar el primer formato de audio (puedes ajustar esto según tus necesidades)
+    const format = audioFormats[0];
+
+    res.header(
+      "Content-Disposition",
+      `attachment; filename="${
+        info.videoDetails.title
+      }.mp3"; filename*=UTF-8''${encodeURIComponent(
+        info.videoDetails.title
+      )}.mp3`
+    );
+    res.header("Content-Type", "audio/mpeg");
+    res.setHeader(
+      "X-Thumbnail-Url",
+      info.videoDetails.thumbnail.thumbnails[0].url
+    );
+
+    // Descargar el flujo de audio y enviar al cliente
+    ytdl(videoId, { format: format }).pipe(res);
+
+  } catch (error) {
+    console.error("Error al obtener información del video:", error.message);
+    res.status(500).send("Error al obtener información del video");
+  }
+});
+
+// Crear el servidor HTTP
+http.createServer(app).listen(HTTP_PORT, () => {
+  console.log(`Servidor HTTP escuchando en http://localhost:${HTTP_PORT}`);
 });
