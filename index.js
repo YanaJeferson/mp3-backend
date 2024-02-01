@@ -107,7 +107,7 @@ const privateKey = fs.readFileSync('/etc/letsencrypt/live/mp3yt.tech/privkey.pem
 const certificate = fs.readFileSync('/etc/letsencrypt/live/mp3yt.tech/fullchain.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
-httpsServer.listen(3001, () => {
+https.listen(3001, () => {
   console.log(`Servidor HTTPS escuchando en https://localhost:3001`);
 });
 
