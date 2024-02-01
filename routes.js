@@ -1,3 +1,4 @@
+
 // routes.js
 const express = require("express");
 const ytdl = require("ytdl-core");
@@ -10,7 +11,7 @@ router.get("/", (req, res) => {
 });
 
 // descargar .mp4
-app.get("/download-video/:videoId", async (req, res) => {
+router.get("/download-video/:videoId", async (req, res) => {
     const videoId = req.params.videoId;
   
     try {
@@ -49,7 +50,7 @@ app.get("/download-video/:videoId", async (req, res) => {
   });
   
   // descargar  .mp3
-  app.get("/download/:videoId", async (req, res) => {
+  router.get("/download/:videoId", async (req, res) => {
     const videoId = req.params.videoId;
   
     try {
