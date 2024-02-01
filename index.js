@@ -1,5 +1,5 @@
 const express = require("express");
-const https = require("https");  // Import the 'https' module
+const https = require("https");
 const fs = require("fs");
 const ytdl = require("ytdl-core");
 const cors = require("cors");
@@ -8,20 +8,16 @@ const responseTime = require("response-time");
 
 const app = express();
 
-// middleware
+// Middleware
 app.use(cors());
 app.use(compression());
 app.use(responseTime());
 
-//middleware
-app.use(cors());
-app.use(compression());
-app.use(responseTime());
-
-//router
+// Router
 app.get("/", (req, res) => {
   res.send("<h1>=]</h1>");
 });
+
 // descargar .mp4
 app.get("/download-video/:videoId", async (req, res) => {
   const videoId = req.params.videoId;
@@ -102,12 +98,11 @@ app.get("/download/:videoId", async (req, res) => {
 });
 
 // server 
-
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/mp3yt.tech/privkey.pem', 'utf8');
 const certificate = fs.readFileSync('/etc/letsencrypt/live/mp3yt.tech/fullchain.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
-https.listen(3001, () => {
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(3001, () => {
   console.log(`Servidor HTTPS escuchando en https://localhost:3001`);
 });
-
